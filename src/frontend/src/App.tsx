@@ -1,8 +1,11 @@
+import { LoginPage } from "@/components/LoginPage";
+import { SignupPage } from "@/components/SignupPage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import {
   CheckCircle2,
   Droplets,
@@ -19,8 +22,8 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
-const WHATSAPP_URL =
-  "https://wa.me/919830000000?text=Hello%2C+I+want+to+place+an+order+with+M%2Fs+Lokenath+Water+Suppliers";
+const PHONE = "7890070592";
+const WHATSAPP_URL = `https://wa.me/91${PHONE}?text=Hello%2C+I+want+to+place+an+order+with+M%2Fs+Lokenath+Water+Suppliers`;
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -94,6 +97,9 @@ const campaRates = [
 export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [view, setView] = useState<"main" | "signup" | "login">("main");
+  const [userName, setUserName] = useState("");
+  const { identity, clear } = useInternetIdentity();
   const [formData, setFormData] = useState({
     name: "",
     business: "",
@@ -122,6 +128,24 @@ export default function App() {
     });
   }
 
+  if (view === "signup")
+    return (
+      <SignupPage
+        onBack={() => setView("main")}
+        onSwitchToLogin={() => setView("login")}
+      />
+    );
+  if (view === "login")
+    return (
+      <LoginPage
+        onBack={() => setView("main")}
+        onSwitchToSignup={() => setView("signup")}
+        onLoginSuccess={(name) => {
+          setUserName(name);
+          setView("main");
+        }}
+      />
+    );
   return (
     <div className="min-h-screen bg-background font-sans">
       {/* Top Utility Bar */}
@@ -130,7 +154,7 @@ export default function App() {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
               <Phone size={13} />
-              +91 98300 XXXXX
+              +91 {PHONE}
             </span>
             <span className="flex items-center gap-1.5">
               <MapPin size={13} />
@@ -185,6 +209,45 @@ export default function App() {
             >
               Order Now
             </Button>
+            {identity ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-700 font-medium">
+                  {userName || "Account"}
+                </span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-[#1F5E8C] text-[#1F5E8C] hover:bg-[#E7F1FA] rounded-full px-4"
+                  onClick={() => {
+                    clear();
+                    setUserName("");
+                  }}
+                  data-ocid="nav.secondary_button"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-[#1F5E8C] text-[#1F5E8C] hover:bg-[#E7F1FA] rounded-full px-4"
+                  onClick={() => setView("login")}
+                  data-ocid="nav.secondary_button"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-[#1F5E8C] hover:bg-[#153F61] text-white rounded-full px-4"
+                  onClick={() => setView("signup")}
+                  data-ocid="nav.primary_button"
+                >
+                  Sign Up
+                </Button>
+              </div>
+            )}
           </nav>
 
           {/* Mobile hamburger */}
@@ -233,6 +296,50 @@ export default function App() {
                 >
                   Order Now
                 </Button>
+                {identity ? (
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-sm text-gray-700 font-medium">
+                      {userName || "Account"}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-[#1F5E8C] text-[#1F5E8C] rounded-full px-4"
+                      onClick={() => {
+                        clear();
+                        setUserName("");
+                        setMobileOpen(false);
+                      }}
+                      data-ocid="nav.secondary_button"
+                    >
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2 mt-1">
+                    <Button
+                      variant="outline"
+                      className="flex-1 border-[#1F5E8C] text-[#1F5E8C] rounded-full"
+                      onClick={() => {
+                        setView("login");
+                        setMobileOpen(false);
+                      }}
+                      data-ocid="nav.secondary_button"
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      className="flex-1 bg-[#1F5E8C] hover:bg-[#153F61] text-white rounded-full"
+                      onClick={() => {
+                        setView("signup");
+                        setMobileOpen(false);
+                      }}
+                      data-ocid="nav.primary_button"
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
+                )}
               </nav>
             </motion.div>
           )}
@@ -588,7 +695,7 @@ export default function App() {
             viewport={{ once: true }}
           >
             * Prices are per case (wholesale). Minimum order quantities apply.
-            Contact us for event & bulk pricing.
+            Contact us for event &amp; bulk pricing.
           </motion.p>
         </div>
       </section>
@@ -968,7 +1075,12 @@ export default function App() {
               <ul className="space-y-3 text-sm text-blue-100">
                 <li className="flex items-start gap-2">
                   <Phone size={14} className="mt-0.5 flex-shrink-0" />
-                  <span>+91 98300 XXXXX</span>
+                  <a
+                    href={`tel:+91${PHONE}`}
+                    className="hover:text-white transition-colors"
+                  >
+                    +91 {PHONE}
+                  </a>
                 </li>
                 <li className="flex items-start gap-2">
                   <MessageCircle size={14} className="mt-0.5 flex-shrink-0" />
@@ -987,7 +1099,7 @@ export default function App() {
                 </li>
                 <li className="flex items-start gap-2">
                   <MapPin size={14} className="mt-0.5 flex-shrink-0" />
-                  <span>Behala, Sarsuna &amp; Sakherbazar, Kolkata</span>
+                  <span>7, Ram Gopal Paul Road, Sarsuna, Kolkata - 700061</span>
                 </li>
               </ul>
             </div>

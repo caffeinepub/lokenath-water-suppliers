@@ -1,27 +1,27 @@
-# M/s Lokenath Water Suppliers
+# Lokenath Water Suppliers
 
 ## Current State
-New project with no existing application files.
+A single-page marketing website with sections: Home, Products, Price List, About Us, Order Form, and Footer/Contact. No user authentication or accounts.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Full business website for M/s Lokenath Water Suppliers (wholesale mineral water and Campa beverages)
-- Hero section with brand tagline and CTA
-- Product categories: Mineral Water (Bulk), Campa Beverages, Event Supplies
-- Order form with fields: Name, Business Name, Phone, Delivery Address, Items & Quantity, Preferred Delivery Date
-- WhatsApp order button integration
-- About Us section with owner names (Dilip Bhattacharya, Subhojit Bhattacharya)
-- Service areas: Behala, Sarsuna, Sakherbazar (Kolkata)
-- Backend to store orders submitted via the website
+- Sign-up page allowing customers to create an account (name, email, phone, password)
+- Login page for returning customers
+- After login, customers see a "My Account" view with their profile
+- Navigation link to Sign Up / Login
+- Authorization component integration
 
 ### Modify
-- N/A
+- Navbar to include Sign Up / Login button
+- Nav links to include account access
 
 ### Remove
-- N/A
+- Nothing removed
 
 ## Implementation Plan
-1. Backend: Actor to store and retrieve orders (submit order, list orders for admin)
-2. Frontend: Single-page website with nav, hero, product categories, order form, about us, footer
-3. Order form submits to backend and also provides WhatsApp fallback link
+1. Select authorization component
+2. Generate backend with user registration support
+3. Add SignupPage and LoginPage components to the frontend
+4. Add routing between main site and auth pages (using simple state-based view switching)
+5. Show logged-in user's name in navbar when authenticated
